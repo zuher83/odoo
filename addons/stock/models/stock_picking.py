@@ -784,8 +784,9 @@ class Picking(models.Model):
         else:
             moves = self.env['stock.move'].browse(move_ids)
             if self.env.context.get('no_state_change'):
-                moves = moves.filtered(lambda m: m.reserved_quant_ids)
-            moves.do_unreserve()
+                moves.filtered(lambda m: m.reserved_quant_ids).do_unreserve()
+            else:
+                moves.do_unreserve()
             moves.action_assign(no_prepare=True)
 
     @api.multi
@@ -847,7 +848,7 @@ class Picking(models.Model):
             if pack_operations_delete:
                 pack_operations_delete.unlink()
         self.do_transfer()
-        return True
+        return
 
     def check_backorder(self):
         need_rereserve, all_op_processed = self.picking_recompute_remaining_quantities(done_qtys=True)
